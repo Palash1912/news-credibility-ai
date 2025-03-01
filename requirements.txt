@@ -1,0 +1,6 @@
+pydantic
+dotenv
+requests
+fastapi[standard]
+twilio
+ngrok

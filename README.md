@@ -10,6 +10,42 @@ News Credibility AI is an AI-powered fact-checking system that verifies the auth
 - 🤖 **WhatsApp Integration**: Users can send news queries via WhatsApp for verification.
 - 🌍 **Cross-Platform Availability**: Accessible via REST API and messaging platforms.
 
+## How It Works
+
+1. The user submits a news claim via WhatsApp.
+2. The system fetches relevant sources and evaluates the claim.
+3. It returns:
+   - A **verdict** (✅ Authentic / ❌ Fake or Misleading)
+   - An **authenticity score**
+   - A **reasoning explanation**
+   - Verified **sources**
+
+## Scenarios
+
+### ✅ Authentic News Example
+
+Query: _"Did India beat NZ in CWC 2023?"_
+
+![Authentic News](images/authentic-news.PNG)
+
+**Verdict:** ✅ Authentic  
+**Authenticity Score:** 9.5  
+**Reasoning:** India beat New Zealand in the 21st match of the ICC Cricket World Cup 2023 by 4 wickets. They also defeated New Zealand in the semifinals by 70 runs.  
+**Sources:** ESPN Cricinfo, Official Cricket Reports
+
+---
+
+### ❌ Fake or Misleading News Example
+
+Query: _"Did Obama win 2024 US elections?"_
+
+![Fake News](images/fake-news.PNG)
+
+**Verdict:** ❌ Fake or Misleading  
+**Authenticity Score:** 1.0  
+**Reasoning:** Barack Obama did not participate in or win the 2024 U.S. presidential election. The election was contested between Donald Trump and Kamala Harris.  
+**Sources:** CFR.org, ABC News
+
 ## 🛠️ Tech Stack
 
 - **Backend**: FastAPI, Python
@@ -18,30 +54,19 @@ News Credibility AI is an AI-powered fact-checking system that verifies the auth
 - **Deployment**: Render (FastAPI backend), Ngrok (for local testing)
 - **Environment Variables**: Managed via `.env` file
 
-## 🔧 Setup & Installation
-
-### 1️⃣ Clone the Repository
+## Installation & Setup
 
 ```bash
-git clone https://github.com/your-username/news-credibility-ai.git
+# Clone the repository
+git clone https://github.com/your-repo/news-credibility-ai.git
 cd news-credibility-ai
-```
 
-### 2️⃣ Create a Virtual Environment
-
-```bash
-python -m venv venv
-source venv/bin/activate  # macOS/Linux
-venv\Scripts\activate    # Windows
-```
-
-### 3️⃣ Install Dependencies
-
-```bash
+# Install dependencies
 pip install -r requirements.txt
+
 ```
 
-### 4️⃣ Set Up Environment Variables
+## Set Up Environment Variables
 
 Create a `.env` file in the root directory and add:
 
@@ -51,17 +76,23 @@ TWILIO_ACCOUNT_SID=your_twilio_account_sid
 TWILIO_AUTH_TOKEN=your_twilio_auth_token
 ```
 
-### 5️⃣ Run the FastAPI Server
+## Run the FastAPI Server
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+fastapi dev main.py
 ```
 
-### 6️⃣ Expose the API Publicly (For WhatsApp Integration)
+## Expose the API Publicly (For WhatsApp Integration)
 
 ```bash
 ngrok http 8000
 ```
+
+## How to Use
+
+1. Deploy the FastAPI backend.
+2. Configure Twilio API to connect with WhatsApp.
+3. Send a message via WhatsApp to test the news verification feature.
 
 Copy the **ngrok** HTTPS URL and update it in Twilio's Webhook settings.
 

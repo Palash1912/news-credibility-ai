@@ -3,8 +3,9 @@ from typing import Union
 from fastapi import FastAPI
 from models.models import *
 from prompt import prompt
-from fastapi import Form, Request
+from fastapi import Form, Request, Response
 from twilio.twiml.messaging_response import MessagingResponse
+from urllib.parse import urlparse
 import os, requests, json, re
 
 app = FastAPI()
@@ -19,7 +20,7 @@ def validate_news(question: str) -> Union[AutheniticityChecker|AuthenticityError
     payload = {
         "model": "sonar",
         "messages": [
-            {"role": "system", "content": prompt.format(user_query=question, k=3)},
+            {"role": "system", "content": prompt.format(user_query=question, k=2)},
             {"role": "user", "content": question},
         ],
         "response_format": {
@@ -48,20 +49,26 @@ async def whatsapp_webhook(
     # Process the news query
     result = validate_news(Body)
 
-    if "error" in result:
+    if isinstance(result, AuthenticityError):
         reply = "Sorry, I couldn't verify this news right now. Please try again later."
     else:
-        is_authentic = "✅ Authentic" if result["is_authentic"] else "❌ Fake or Misleading"
+        is_authentic = "✅ Authentic" if result.is_authentic else "❌ Fake or Misleading"
+        if result.sources:
+            formatted_sources = "\n".join([f"{i+1}. {src}" for i, src in enumerate(result.sources)])
+        else:
+            formatted_sources = "No credible sources found."
+
         reply = (
             f"🔍 *News Authenticity Check*\n\n"
-            f"📜 *News:* {Body}\n"
-            f"📝 *Verdict:* {is_authentic}\n"
-            f"📊 *Authenticity Score:* {result['authenticity_score']}/10\n"
-            f"📖 *Reasoning:* {result['reasoning']}"
+            f"📜 *News:* {Body}\n\n"
+            f"📝 *Verdict:* {is_authentic}\n\n"
+            f"📊 *Authenticity Score:* {result.authenticity_score}\n\n"
+            f"📖 *Reasoning:* {result.reasoning}\n\n"
+            f"🌐 *Souces:*\n{formatted_sources}"
         )
 
-    response.message("Thank you!!")
-    return response
+    response.message(reply)
+    return Response(content=str(response), media_type="application/xml")
 
 
 @app.post("/news-check")

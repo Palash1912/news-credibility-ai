@@ -5,7 +5,6 @@ from models.models import *
 from prompt import prompt
 from fastapi import Form, Request, Response
 from twilio.twiml.messaging_response import MessagingResponse
-from urllib.parse import urlparse
 import os, requests, json, re
 
 app = FastAPI()
